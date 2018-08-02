@@ -37,25 +37,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int CODE_CAMERA = 101;
     private static final int CODE_PICK_IMAGE = 102;
-    public static final String APPLICATION_ID = "F7061CD0-9851-0DC3-FFD4-755525AF1300";
-    public static final String API_KEY = "052E0B94-0D73-1D5F-FF45-E0B1D74EEE00";
-    public static final String SERVER_URL = "https://api.backendless.com";
-    public static final String PATH = "mypics";
+    public static final String INPUT_NAME = "inputname";
 
     EditText inputName;
     Button takePhoto;
     View inputView;
     TextView tvDone;
-    LoadingDialog sProgress;
-    String imgName;
-    Uri imgUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Backendless.setUrl(SERVER_URL);
-        Backendless.initApp(getApplicationContext(), APPLICATION_ID, API_KEY);
 
         inputName = findViewById(R.id.inputName);
         inputView = findViewById(R.id.inputView);
@@ -88,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
                     if (hasPermissions(MainActivity.this, permission)) {
                         openCameraWithPermission();
 
-                    } else if (needRequestPermissions(MainActivity.this, permission, CODE_CAMERA)) {
-                        openCameraWithPermission();
+                    } else if (needRequestPermissions(MainActivity.this, permission)) {
+                        ActivityCompat.requestPermissions(MainActivity.this, permission, CODE_CAMERA);
                     }
                 }
             }
@@ -98,9 +90,9 @@ public class MainActivity extends AppCompatActivity {
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                inputName.setText("");
-                inputView.setVisibility(View.VISIBLE);
-                tvDone.setVisibility(View.GONE);
+//                inputName.setText("");
+//                inputView.setVisibility(View.VISIBLE);
+//                tvDone.setVisibility(View.GONE);
             }
         });
     }
@@ -116,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openCameraWithPermission() {
         Log.i(TAG, "open camera with permission");
+        /*
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
         ContentValues values = new ContentValues();
@@ -125,6 +118,12 @@ public class MainActivity extends AppCompatActivity {
 
         cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imgUri);
         startActivityForResult(cameraIntent, CODE_PICK_IMAGE);
+        */
+        inputView.setVisibility(View.GONE);
+        tvDone.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, CameraActivity.class);
+        intent.putExtra(INPUT_NAME, inputName.getText().toString().trim());
+        startActivity(intent);
     }
 
     private static boolean hasPermissions(Context context, String[] permissions) {
@@ -139,13 +138,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private static boolean needRequestPermissions(Activity context, String[] permissions, int requestCode) {
+    private static boolean needRequestPermissions(Activity context, String[] permissions) {
         if (hasPermissions(context, permissions)) {
             Log.i(TAG, "not need permission");
             return false;
         }
 
-        ActivityCompat.requestPermissions(context, permissions, requestCode);
         return true;
     }
 
@@ -154,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CODE_PICK_IMAGE) {
 
+            /*
             Log.e(TAG, imgUri.toString());
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imgUri);
@@ -182,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
         }
+
     }
 }
